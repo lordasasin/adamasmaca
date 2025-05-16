@@ -38,15 +38,12 @@ function mainMenu() {
                         return mainMenu();
                     }
 
-
-
                     const content = fs.readFileSync(fileName, "utf8");
                     let words = [];
                     let currentWord = "";
 
                     for (let i = 0; i < content.length; i++) {
                         const ch = content[i];
-
                         if (ch === " " || ch === "\n" || ch === "\t") {
                             if (currentWord.length > 0) {
                                 words.push(currentWord);
@@ -62,10 +59,6 @@ function mainMenu() {
                     }
 
                     let word = words[0].trim().toLowerCase();
-
-
-
-
                     let hidden = [];
                     for (let i = 0; i < word.length; i++) {
                         hidden[i] = "_";
@@ -78,7 +71,6 @@ function mainMenu() {
                     function askLetter() {
                         rl.question("Guess a letter: ", function (letter) {
                             letter = letter.toLowerCase();
-
                             if (letter.length !== 1 || !letter.match(/[a-z]/)) {
                                 console.log("Please enter a single valid letter.");
                                 return askLetter();
@@ -108,19 +100,8 @@ function mainMenu() {
                             if (hidden.join("") === word) {
                                 console.log("Congrats! You guessed the word:", word);
 
-
-
-
                                 const point = difficultyPoint * lives;
-                                let leaderboard = [];
-                                try {
-                                    const data = fs.readFileSync("leaderboard.json", "utf8");
-                                    leaderboard = JSON.parse(data);
-                                } catch (e) { }
-
-                                leaderboard.push({ name: playerName, point });
-                                fs.writeFileSync("leaderboard.json", JSON.stringify(leaderboard, null, 2));
-
+                                fs.appendFileSync("leaderboard.txt", `${playerName},${point}#`);
                                 console.log(`Scores Saved! ${playerName} - ${point} point`);
 
                                 return mainMenu();
@@ -136,20 +117,35 @@ function mainMenu() {
 
         } else if (choice === "2") {
             console.log("\n--- LeaderBoard ---");
-            fs.readFile('leaderboard.json', (err, data) => {
-                if (err) throw err;
+            const content = fs.readFileSync("leaderboard.txt", "utf8");
 
+            const datas = content.split("#");
+            let leaderboard = [];
 
-                let leaderboard = JSON.parse(data).sort((a, b) => b.point - a.point);
+            for (let i = 0; i < datas.length; i++) {
+                if (datas[i]) {
+                    const parts = datas[i].split(",");
+                    const name = parts[0].trim();
+                    const point = Number(parts[1].trim());
+                    leaderboard.push({ name, point });
+                }
+            }
 
-                console.log(leaderboard);
-                return mainMenu();
-            });
+            leaderboard.sort((a, b) => b.point - a.point);
+
+            for (let i = 0; i < leaderboard.length; i++) {
+                console.log("Name: " + leaderboard[i].name + ", Point: " + leaderboard[i].point);
+            }
 
             return mainMenu();
 
+        }
 
-        } else if (choice === "3") {
+
+
+
+
+        else if (choice === "3") {
             console.log("Exiting.");
             rl.close();
 
