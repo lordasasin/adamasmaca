@@ -38,7 +38,7 @@ function mainMenu() {
                         return mainMenu();
                     }
 
-                   
+
 
                     const content = fs.readFileSync(fileName, "utf8");
                     let words = [];
@@ -112,8 +112,16 @@ function mainMenu() {
 
 
                                 const point = difficultyPoint * lives;
-                                fs.appendFileSync("leaderboard.txt", `name: ${playerName} - point: ${point}\n`);
-                                console.log(`Puanın kaydedildi! ${playerName} - ${point} puan`);
+                                let leaderboard = [];
+                                try {
+                                    const data = fs.readFileSync("leaderboard.json", "utf8");
+                                    leaderboard = JSON.parse(data);
+                                } catch (e) { }
+
+                                leaderboard.push({ name: playerName, point });
+                                fs.writeFileSync("leaderboard.json", JSON.stringify(leaderboard, null, 2));
+
+                                console.log(`Scores Saved! ${playerName} - ${point} point`);
 
                                 return mainMenu();
                             } else {
@@ -128,10 +136,18 @@ function mainMenu() {
 
         } else if (choice === "2") {
             console.log("\n--- LeaderBoard ---");
-            const leaderboard = fs.readFileSync("leaderboard.txt", "utf8");
-            console.log(leaderboard);
+            fs.readFile('leaderboard.json', (err, data) => {
+                if (err) throw err;
+
+
+                let leaderboard = JSON.parse(data).sort((a, b) => b.point - a.point);
+
+                console.log(leaderboard);
+                return mainMenu();
+            });
 
             return mainMenu();
+
 
         } else if (choice === "3") {
             console.log("Exiting.");
