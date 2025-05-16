@@ -38,10 +38,7 @@ function mainMenu() {
                         return mainMenu();
                     }
 
-                    if (!fs.existsSync(fileName)) {
-                        console.log("File not found:", fileName);
-                        return mainMenu();
-                    }
+                   
 
                     const content = fs.readFileSync(fileName, "utf8");
                     let words = [];

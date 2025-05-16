@@ -1,1 +1,2 @@
 name: yusuf - point: 8
+name: kral - point: 8
